@@ -20,7 +20,7 @@
  */
 
 #include "stm32.h"
-#include "exec-memory.h"
+#include "exec/address-spaces.h"
 
 /* DEFINITIONS */
 
@@ -35,9 +35,9 @@ void stm32_hw_warn(const char *fmt, ...)
     fprintf(stderr, "qemu stm32: hardware warning: ");
     vfprintf(stderr, fmt, ap);
     fprintf(stderr, "\n");
-    for(env = first_cpu; env != NULL; env = env->next_cpu) {
-        fprintf(stderr, "CPU #%d:\n", env->cpu_index);
-        cpu_dump_state(env, stderr, fprintf, 0);
+    int i = 0;
+    for(env = first_cpu; env != NULL; env = env->next_cpu, ++i) {
+      fprintf(stderr, "CPU #%d:\n", i);
     }
     va_end(ap);
 }
@@ -110,9 +110,9 @@ DeviceState *stm32_init_periph(DeviceState *dev, stm32_periph_t periph,
                                         hwaddr addr, qemu_irq irq)
 {
     qdev_init_nofail(dev);
-    sysbus_mmio_map(sysbus_from_qdev(dev), 0, addr);
+    sysbus_mmio_map(SYS_BUS_DEVICE(dev), 0, addr);
     if (irq) {
-        sysbus_connect_irq(sysbus_from_qdev(dev), 0, irq);
+        sysbus_connect_irq(SYS_BUS_DEVICE(dev), 0, irq);
     }
     return dev;
 }
@@ -122,7 +122,7 @@ Stm32Uart *stm32_create_uart_dev(
         DeviceState *rcc_dev,
         DeviceState **gpio_dev,
         DeviceState *afio_dev,
-        target_phys_addr_t addr,
+        hwaddr addr,
         qemu_irq irq)
 {
     DeviceState *uart_dev = qdev_create(NULL, "stm32_uart");
