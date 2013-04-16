@@ -223,6 +223,7 @@ do { printf("STM32_RCC: " fmt , ## __VA_ARGS__); } while (0)
 
 #define RCC_APB1LPENR_RESET_VALUE  0x36FEC9FF
 #define RCC_APB1LPENR_OFFSET       0x60
+// Check https://github.com/dna001/qemu/commit/d5d92aa93916f032b143fe5834bfa17495ddb12c
 
 #define RCC_APB2LPENR_RESET_VALUE  0x00075F33
 #define RCC_APB2LPENR_OFFSET       0x64
